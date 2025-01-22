@@ -1,0 +1,20 @@
+docker run -it \
+-e POSTGRES_USER="root" \
+-e POSTGRES_PASSWORD="root" \
+-e POSTGRES_DB="ny_taxi" \
+-v //wsl/Ubuntu/home/souravmighty/workspace/data_engineering_bootcamp/docker_sql/ny_taxi_postgres_data:var/lib/postgresql/data \
+-p 5432:5432 \
+postgres:13
+
+docker run -it \
+  -e POSTGRES_DB=ny_taxi \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -v vol-pgdata:/var/lib/postgresql/data \
+  -p 5432:5432 \
+  --name pgdatabase \
+  postgres:17-alpine
+
+  pip install psycopg-binary
+
+  gcli -h localhost -p 5432 -u postgres -W postgres -d ny_taxi
