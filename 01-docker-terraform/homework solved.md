@@ -196,13 +196,6 @@ group by 1 order by 2 desc limit 1;
 
 ## Terraform
 
-In this section homework we'll prepare the environment by creating resources in GCP with Terraform.
-
-In your VM on GCP/Laptop/GitHub Codespace install Terraform. 
-Copy the files from the course repo
-[here](../../../01-docker-terraform/1_terraform_gcp/terraform) to your VM/Laptop/GitHub Codespace.
-
-Modify the files as necessary to create a GCP Bucket and Big Query Dataset.
 
 
 ## Question 7. Terraform Workflow
@@ -219,7 +212,5 @@ Answers:
 - terraform init, terraform apply -auto-approve, terraform destroy
 - terraform import, terraform apply -y, terraform rm
 
+### Answer: terraform init, terraform apply -auto-approve, terraform destroy
 
-## Submitting the solutions
-
-* Form for submitting: https://courses.datatalks.club/de-zoomcamp-2025/homework/hw1
