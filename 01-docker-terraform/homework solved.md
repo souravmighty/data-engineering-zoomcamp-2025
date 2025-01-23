@@ -1,19 +1,5 @@
 # Module 1 Homework: Docker & SQL
 
-In this homework we'll prepare the environment and practice
-Docker and SQL
-
-When submitting your homework, you will also need to include
-a link to your GitHub repository or other public code-hosting
-site.
-
-This repository should contain the code for solving the homework. 
-
-When your solution has SQL or shell commands and not code
-(e.g. python files) file format, include them directly in
-the README file of your repository.
-
-
 ## Question 1. Understanding docker first run 
 
 Run docker with the `python:3.12.8` image in an interactive mode, use the entrypoint `bash`.
@@ -24,6 +10,11 @@ What's the version of `pip` in the image?
 - 24.2.1
 - 23.3.1
 - 23.2.1
+### Answer: 24.3.1
+
+``` bash
+docker run -it --rm python:3.12.8 pip --version
+```
 
 
 ## Question 2. Understanding Docker networking and docker-compose
@@ -70,6 +61,8 @@ volumes:
 
 If there are more than one answers, select only one of them
 
+### Answer: postgres:5432 and db:5432
+
 ##  Prepare Postgres
 
 Run Postgres and load data as shown in the videos
@@ -107,6 +100,19 @@ Answers:
 - 104,793;  202,661;  109,603;  27,678;  35,189
 - 104,838;  199,013;  109,645;  27,688;  35,202
 
+ ### Answer: 104,838;  199,013;  109,645;  27,688;  35,202
+  ```sql
+  SELECT case when trip_distance <= 1 then '1. Up to 1 mile'
+  when trip_distance > 1 and trip_distance <= 3 then '2. In between 1 (exclusive) and 3 miles (inclusive)'
+  when trip_distance > 3 and trip_distance <= 7 then '3. In between 3 (exclusive) and 7 miles (inclusive)'
+  when trip_distance > 7 and trip_distance <= 10 then '4. In between 7 (exclusive) and 10 miles (inclusive)'
+  else '5. Over 10 miles'
+  end as trip_segment,
+  count(*) as trip_count
+  from green_taxi_trips
+  group by 1;
+  ```
+
 
 ## Question 4. Longest trip for each day
 
@@ -119,6 +125,16 @@ Tip: For every day, we only care about one single trip with the longest distance
 - 2019-10-24
 - 2019-10-26
 - 2019-10-31
+
+### Answer: 2019-10-31
+
+```sql
+SELECT pickup_date as max_trip_pickup_date from 
+(SELECT date(lpep_pickup_datetime) as pickup_date,
+max(trip_distance) as max_trip_distance
+from green_taxi_trips
+group by 1 order by 2 desc) limit 1;
+```
 
 
 ## Question 5. Three biggest pickup zones
@@ -133,6 +149,17 @@ Consider only `lpep_pickup_datetime` when filtering by date.
 - Morningside Heights, Astoria Park, East Harlem South
 - Bedford, East Harlem North, Astoria Park
 
+### Answer: East Harlem North, East Harlem South, Morningside Heights
+```sql
+SELECT b."Zone",
+sum(a.total_amount) as total_amount
+from green_taxi_trips a
+left join public.taxi_zones b
+on a."PULocationID" = b."LocationID"
+where date(a.lpep_pickup_datetime) = '2019-10-18'
+group by 1
+having sum(a.total_amount) > 13000;
+```
 
 ## Question 6. Largest tip
 
@@ -148,6 +175,23 @@ We need the name of the zone, not the ID.
 - JFK Airport
 - East Harlem North
 - East Harlem South
+
+### Answer: JFK Airport
+```sql
+with merged_table as
+(SELECT a.*,
+b."Zone" as "Pickup_Zone",
+c."Zone" as "Dropoff_Zone"
+from green_taxi_trips a
+left join taxi_zones b
+on a."PULocationID" = b."LocationID"
+left join taxi_zones c
+on a."DOLocationID" = c."LocationID")
+
+SELECT "Dropoff_Zone", max(tip_amount) as max_tip_amount
+from merged_table where "Pickup_Zone" = 'East Harlem North'
+group by 1 order by 2 desc limit 1;
+```
 
 
 ## Terraform
